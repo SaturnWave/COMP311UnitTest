@@ -1,45 +1,49 @@
 namespace TestProject1;
-
 using MyMath;
 using NUnit.Framework;
+using System;
 
-public class Tests
-{
-    private Rooter rooter;
 
-    [SetUp]
-    public void Setup()
+    public class Tests
     {
-        // Initialize the instance to test
-        rooter = new Rooter();
-    }
+        private Rooter rooter;
 
-    [Test]
-    public void RooterTestNegativeInput()
-    {
-        try
+        [SetUp]
+        public void Setup()
         {
-            Rooter.SquareRoot(-10);
-            // If no exception is thrown, the test should fail
-            Assert.Fail("Expected ArgumentOutOfRangeException for negative input not thrown.");
+            rooter = new Rooter();
         }
-        catch (ArgumentOutOfRangeException)
+
+        [Test]
+        public void RooterTestNegativeInput()
         {
-            // If an ArgumentOutOfRangeException is caught, the test passes
+            Assert.Throws<ArgumentOutOfRangeException>(() => rooter.SquareRoot(-10), "Expected ArgumentOutOfRangeException for negative input not thrown.");
+        }
+
+        [Test]
+        public void BasicRooterTest()
+        {
+            double expectedResult = 2.0;
+            double input = expectedResult * expectedResult;
+            double actualResult = rooter.SquareRoot(input);
+            Assert.AreEqual(expectedResult, actualResult, delta: expectedResult / 100);
+        }
+
+        [Test]
+        public void RooterValueRange()
+        {
+            for (double expectedResult = 1e-8; expectedResult < 1e+8; expectedResult *= 3.2)
+            {
+                RooterOneValue(rooter, expectedResult);
+            }
+        }
+
+        private void RooterOneValue(Rooter rooter, double expectedResult)
+        {
+            double input = expectedResult * expectedResult;
+            double actualResult = rooter.SquareRoot(input);
+            Assert.AreEqual(expectedResult, actualResult, delta: expectedResult / 1000);
         }
     }
 
-    [Test]
-    public void BasicRooterTest()
-    {
-        // Define a test input and expected output value
-        double expectedResult = 2.0;
-        double input = expectedResult * expectedResult;
 
-        // Run the method under test
-        double actualResult = Rooter.SquareRoot(input);
-
-        // Verify the result
-        Assert.AreEqual(expectedResult, actualResult, delta: expectedResult / 100);
-    }
-}
